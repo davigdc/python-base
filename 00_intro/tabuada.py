@@ -1,27 +1,31 @@
 #!/usr/bin/env python
 
-"""Imprime a tabuada do 1 ao 10.
+"""Imprime a tabuada de 1 à N.
 
-Tabuada do 1
-1
-2
-3
+---Tabuada do 1---
+    1 * 1 = 1
+    2 * 1 = 2
+    3 * 1 = 3
 ...
----------------
-Tabuada do 2
-2
-4
-6
+###################
+---Tabuada do 2---
+    2 * 2 = 4
+    4 * 2 = 8
 ...
----------------
+###################
 """
 __version__ = "0.0.1"
 __author__ = "Davi Carmo"
 
-numeros = list(range(1,11))
+N = 10
+numeros = list(range(1,(N + 1)))
 
-for numero in numeros:
-    print(f"Tabuada do: {numero}")
-    for x in numeros:
-        print(f"{numero} * {x} = {numero * x}")
-    print("-" * 15)
+for n1 in numeros:
+    print("{:-^20}".format(f"Tabuada do {n1}"))
+    print()
+
+    for n2 in numeros:
+        resultado = n1 * n2
+        print("{:^20}".format(f"{n1} * {n2} = {resultado}"))
+
+    print("#" * 20 + "\n")
