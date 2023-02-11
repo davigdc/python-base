@@ -3,29 +3,31 @@
 
 NAO MANDE SPAM!!!
 """
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
-email_template = """
-Olá, %(nome)s
+import os, sys
 
-Tem interesse em comprar %(produto)s?
+arguments = sys.argv[1:]
+if len(arguments) != 2:
+    print("Informe dois nomes de arquivos como parâmetro (emails, template).")
+    sys.exit(1)
 
-Este produto é ótimo para resolver %(texto)s
+filename = arguments[0]
+templatename = arguments[1]
 
-Clique agora em %(link)s
+path = os.curdir
+filepath = os.path.join(path, filename)
+templatepath = os.path.join(path, templatename)
 
-Apenas %(quantidade)d disponiveis!
+for line in open(filepath):
+    name, email = line.split(",")
 
-Preço promocional %(preco).2f
-"""
-
-clientes = ["Maria", "Joao", "Bruno"]
-
-for cliente in clientes:
+    # TODO: Substituir por envio de email
+    print(f"Enviando email para: {email}")
     print(
-        email_template
+        open(templatepath).read()
         % {
-            "nome": cliente,
+            "nome": name,
             "produto": "caneta",
             "texto": "Escrever muito bem",
             "link": "http://canetaslegais.com",
@@ -33,3 +35,4 @@ for cliente in clientes:
             "preco": 50.5,
         }
     )
+    print("-" * 50)
