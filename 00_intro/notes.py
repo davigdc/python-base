@@ -30,7 +30,13 @@ if arguments[0] not in cmds:
     
 if arguments[0] == "read":
     # leitura das notas
-    for line in open(filepath):
+    try:
+        _file = open(filepath)
+    except FileNotFoundError as e:
+        print(str(e))
+        sys.exit(1)
+
+    for line in _file:
         title, tag, text = line.split("\t")
         if tag.lower() == arguments[1].lower():
             print(f"Title: {title}")
@@ -38,7 +44,13 @@ if arguments[0] == "read":
             print("-" * 50)
 
 if arguments[0] == "new":
-    title = arguments[1] # TODO: Tratar exception
+    try:
+        title = arguments[1]
+    except IndexError as e:
+        print(f"[ERROR] {str(e)}")
+        print("You need to pass the title of the note. eg.: `notes.py new title`")
+        sys.exit(1)
+
     text = [
         f"{title}",
         input("Tag: ").strip(),

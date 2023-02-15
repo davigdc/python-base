@@ -32,15 +32,14 @@ from datetime import datetime
 
 arguments = sys.argv[1:]
 
-# TODO: Exceptions
 if not arguments:
-    operation = input("Operação: ")
+    operation = input("Operation: ")
     n1 = input("n1: ")
     n2 = input("n2: ")
     arguments = [operation, n1, n2]
 
 elif len(arguments) != 3:
-    print("Número de argumentos inválidos")
+    print("Invalid number of arguments.")
     print("ex: `sum 5 5`")
     sys.exit(1)
 
@@ -48,16 +47,16 @@ operation, *nums = arguments
 valid_operations = ("sum", "sub", "mul", "div")
 
 if operation not in valid_operations:
-    print("Operação inbálida.")
+    print("Invalid Operation")
     print(valid_operations)
     sys.exit(1)
 
 validated_nums = []
 
 for num in nums:
-    # TODO: Repetição while + exceptions
+    # TODO: Repetição while
     if not num.replace(".", "").isdigit():
-        print(f"Número inválido {num}")
+        print(f"Invalid argument `{num}`")
         sys.exit(1)
     elif "." in num:
         num = float(num)
@@ -66,7 +65,11 @@ for num in nums:
     
     validated_nums.append(num)
 
-n1, n2 = validated_nums
+try:
+    n1, n2 = validated_nums
+except ValueError as e:
+    print(f"[ERROR] {str(e)}")
+    sys.exit(1)
 
 # TODO: Usar dict de funcoes
 if operation == "sum":
@@ -76,17 +79,23 @@ elif operation == "sub":
 elif operation == "mul":
     result = n1 * n2
 else:
-    if n2 == 0:
-        print("Impossível divisão por 0.")
-        exit()
-    result = n1 / n2
+    try:
+        result = n1 / n2
+    except ZeroDivisionError as e:
+        print(f"[ERROR] {str(e)}")
+        sys.exit(1)
 
 path = os.curdir
 filepath = os.path.join(path, "infixcalc.log")
 timestamp = datetime.now().isoformat()
 user = os.getenv("USER", "anonymous")
 
-with open(filepath, "a") as file_:
-    file_.write(f"{timestamp} - {user} - {operation},{n1},{n2} = {result}\n")
+try:
+    with open(filepath, "a") as file_:
+        file_.write(f"{timestamp} - {user} - {operation},{n1},{n2} = {result}\n")
+except PermissionError as e:
+    # TODO: logging
+    print(str(e))
+    sys.exit(1)
 
 print(f"O resultado é: {result}")
