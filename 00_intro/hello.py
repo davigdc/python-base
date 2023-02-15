@@ -24,8 +24,13 @@ arguments = {
 }
 
 for arg in sys.argv[1:]:
-    # TODO: Tratar ValueError
-    key, value = arg.split('=')
+    try:
+        key, value = arg.split('=')
+    except ValueError as e:
+        print(f"[ERROR] {str(e)}")
+        print(f"You need to use `=`. You passed `{arg}`, try: `--key=value`")
+        sys.exit(1)
+
     key = key.lstrip("-").strip()
     value = value.strip()
 
@@ -50,6 +55,13 @@ msg = {
     "es_SP": "Hola, Mundo!",
     "fr_FR": "Bonjour Monde!",
 }
+
+try:
+    msg[current_language]
+except KeyError as e:
+    print(f"[ERROR] {str(e)}")
+    print(f"Invalid language `{current_language}`. Available languages: {list(msg.keys())}")
+    sys.exit(1)
 
 print(
     msg[current_language] * int(arguments["count"])
