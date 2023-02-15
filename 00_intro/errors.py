@@ -1,17 +1,20 @@
 #!/usr/bin/env python3
 import os, sys
 
-# LBYL - Look Before You Leap
+#  EAFP - Easy to ask Forgiveness than permission
 
-if os.path.exists("names.txt"):
-    print("O arqvuivo existe")
-    input("...") # Race Condition
+try:
     names = open("names.txt").readlines()
-else:
-    print("[ERROR] File names.txt not found.")
+except FileNotFoundError as e:
+    print(str(e))
     sys.exit(1)
-
-if len(names) >= 3:
-    print(names[2])
+    # TODO: Usar retry
 else:
+    print("Sucesso!!!")
+finally:
+    print("Execute isso sempre!")
+
+try:
+    print(names[2])
+except:
     print("[ERROR] Missing name in the list")
