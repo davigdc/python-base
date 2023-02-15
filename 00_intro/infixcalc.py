@@ -27,8 +27,18 @@ n2: 4
 """
 __version__ = "0.1.0"
 
-import sys, os
+import sys, os, logging
 from datetime import datetime
+
+log_level = os.getenv("LOG_LEVEL", "WARNING").upper()
+log = logging.Logger("davigdc", log_level)
+ch = logging.StreamHandler()
+ch.setLevel(log_level)
+fmt = logging.Formatter(
+    '%(asctime)s %(name)s %(levelname)s l:%(lineno)d f:%(filename)s: %(message)s'
+)
+ch.setFormatter(fmt)
+log.addHandler(ch)
 
 arguments = sys.argv[1:]
 
@@ -68,7 +78,7 @@ for num in nums:
 try:
     n1, n2 = validated_nums
 except ValueError as e:
-    print(f"[ERROR] {str(e)}")
+    log.error(str(e))
     sys.exit(1)
 
 # TODO: Usar dict de funcoes
@@ -82,7 +92,7 @@ else:
     try:
         result = n1 / n2
     except ZeroDivisionError as e:
-        print(f"[ERROR] {str(e)}")
+        log.error(str(e))
         sys.exit(1)
 
 path = os.curdir
@@ -94,8 +104,7 @@ try:
     with open(filepath, "a") as file_:
         file_.write(f"{timestamp} - {user} - {operation},{n1},{n2} = {result}\n")
 except PermissionError as e:
-    # TODO: logging
-    print(str(e))
+    log.error(str(e))
     sys.exit(1)
 
 print(f"O resultado é: {result}")

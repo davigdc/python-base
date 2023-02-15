@@ -17,6 +17,17 @@ __license__ = "Unlicense"
 
 import os
 import sys
+import logging
+
+log_level = os.getenv("LOG_LEVEL", "WARNING").upper()
+log = logging.Logger("davigdc", log_level)
+ch = logging.StreamHandler()
+ch.setLevel(log_level)
+fmt = logging.Formatter(
+    '%(asctime)s %(name)s %(levelname)s l:%(lineno)d f:%(filename)s: %(message)s'
+)
+ch.setFormatter(fmt)
+log.addHandler(ch)
 
 arguments = {
     "lang": None,
@@ -27,8 +38,11 @@ for arg in sys.argv[1:]:
     try:
         key, value = arg.split('=')
     except ValueError as e:
-        print(f"[ERROR] {str(e)}")
-        print(f"You need to use `=`. You passed `{arg}`, try: `--key=value`")
+        log.error(
+            "You need to use `=`. You passed `%s`, try `--key=value`. Error: %s",
+            arg,
+            str(e),
+        )
         sys.exit(1)
 
     key = key.lstrip("-").strip()
@@ -59,8 +73,11 @@ msg = {
 try:
     msg[current_language]
 except KeyError as e:
-    print(f"[ERROR] {str(e)}")
-    print(f"Invalid language `{current_language}`. Available languages: {list(msg.keys())}")
+    log.error(
+        "Invalid language `%s`, Avalilable languages: %s.",
+        current_language,
+        list(msg.keys()),
+    )
     sys.exit(1)
 
 print(
