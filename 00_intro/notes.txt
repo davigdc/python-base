@@ -1,0 +1,3 @@
+Primeira Nota	Futebol	O galo empatou.
+Segunda Nota	Tecnologia	Python eh brabo
+Terceira Nota	Trabalho	Terminar de automatizar cluster
