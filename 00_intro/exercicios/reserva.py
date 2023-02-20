@@ -25,86 +25,73 @@ Se outro usuário tentar reservar o mesmo quarto o programa deve exibir uma mens
 informando que já está resevado.
 
 """
-__version__ = "0.0.1"
+__version__ = "0.0.2"
 
-import sys, os
+import sys, logging
 
-path = os.curdir
-rooms_file = os.path.join(path, "quartos.txt")
-booked_file = os.path.join(path, "reservas.txt")
+ocupados = {}
+quartos = {}
 
 try:
-    with open(rooms_file) as _file:
-        rooms_raw = _file.readlines()
-    with open(booked_file) as _file:
-        bookeds_raw = _file.readlines()
-except FileNotFoundError as e:
-    print(str(e))
-    sys.exit(1)
-
-rooms = []
-
-for room_raw in rooms_raw:
-    room = room_raw.replace("\n", "")
-    try:
-        id, name, price = room.split(",")
-        room_parsed = {
-            "id": int(id),
-            "name": name,
-            "price": float(price),
+    for line in open("reservas.txt"):
+        nome, num_quarto, dias = line.strip().split(",")
+        ocupados[int(num_quarto)] = {
+            "nome": nome,
+            "dias": int(dias),
         }
-    except ValueError as e:
-        print(f"[ERROR] Arquivo com erro de formatação. `{str(e)}`")
-        sys.exit(1)        
 
-    rooms.append(room_parsed)
-
-bookeds = []
-
-for booked_raw in bookeds_raw:
-    booked = booked_raw.replace("\n", "")
-    try:
-        name, id, booked_days = booked.split(",")
-        booked_parsed = {
-            "name": name,
-            "id": int(id),
-            "booked_days": int(booked_days),
+    for line in open("quartos.txt"):
+        codigo, nome, preco = line.strip().split(",")
+        quartos[int(codigo)] = {
+            "nome": nome,
+            "preco": float(preco), # TODO: Decimal
+            "disponivel": False if int(codigo) in ocupados else True,
         }
-    except ValueError as e:
-        print(f"[ERROR] Arquivo com erro de formatação. `{str(e)}`")
-        sys.exit(1)        
-
-    bookeds.append(booked_parsed)
-
-# print(rooms, bookeds, sep="\n")
-
-print("Quartos:\n")
-for room in rooms:
-    print(f"ID: {room['id']}\tNome: {room['name']}\tPreço: {room['price']}")
-    print("-" * 50)
-
-user = {}
-
-try:
-    user["user_name"] = input("\nQual seu nome? ")
-    user["user_room"] = int(input("Qual o ID do quarto a ser reservado? "))
-    user["user_days"] = int(input("Qual a quantidade de dias a serem reservados? "))
-except ValueError as e:
-    print(f"[ERROR] Entrada inválida. `{str(e)}`")
+except FileNotFoundError:
+    logging.error("Arquivo não existe.")
+    sys.exit(1)
+except ValueError:
+    logging.error("Valores inválidos no arquivo.")
     sys.exit(1)
 
-for booked in bookeds:
-    if booked["id"] == user["user_room"]:
-        print("\n⚠️ Não é possível reservar quarto, outra pessoa já o reservou. 😢")
-        sys.exit()
+print("Reserva Hotel Pythonico")
+nome_cliente = input("Nome do cliente: ").strip()
+print("-" * 40)
+
+if len(ocupados) == len(quartos):
+    print("Hotel Lotado")
+    sys.exit(1)
+
+print("Lista de quartos disponíveis: ")
+for codigo, dados in quartos.items():
+    nome_quarto = dados["nome"]
+    preco = dados["preco"]
+    disponivel = "✅" if dados["disponivel"] else "⛔"
+    # TODO: Substrituir casa decimal por virgula
+    print(f"{codigo} - {nome_quarto} - R$ {preco:.2f} - {disponivel}")
+
+print("-" * 40)
 
 try:
-    with open(booked_file, "a") as _file:
-        book = f"{user['user_name']},{user['user_room']},{user['user_days']}\n"
-        _file.write(book)
-
-except KeyError as e:
-    print(str(e))
+    num_quarto = int(input("Número do quarto: ").strip())
+    if not quartos[num_quarto]["disponivel"]:
+        print(f"O quarto {num_quarto} não está disponível")
+        sys.exit(1)
+    dias = int(input("Quantos dias: ").strip())
+except ValueError:
+    logging.error("Valor deve ser numérico.")
     sys.exit(1)
+except KeyError:
+    logging.error("Quarto não cadastrado.")
+    sys.exit(1)
+
+nome_quarto = quartos[num_quarto]["nome"]
+preco_quarto = quartos[num_quarto]["preco"]
+disponivel = quartos[num_quarto]["disponivel"]
+total = preco_quarto * dias
+
+with open("reservas.txt", "a") as file_:
+    file_.write(f"{nome_cliente},{num_quarto},{dias}\n")
 
 print("Reserva realizada com sucesso! 🏖️")
+print(f"{nome_cliente.capitalize()} você escolheu o quarto `{nome_quarto}` e vai custar: R${total:.2f}")
