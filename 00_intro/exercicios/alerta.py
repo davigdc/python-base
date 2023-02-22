@@ -3,7 +3,7 @@
 Alarme de temperatura
 
 """
-__version__ = "0.0.1"
+__version__ = "0.0.2"
 
 import sys
 
@@ -11,6 +11,14 @@ info = {
     "temperatura": None,
     "umidade": None,
 }
+
+# while True:
+#     # condicao de parada
+#     # o dicionario esta completamente preenchido
+#     info_size = len(info.values())
+#     filled_size = len([value for value in info.values() if value is not None])
+#     if info_size == filled_size:
+#         break
 
 for key in info.keys():
     try:
@@ -24,10 +32,10 @@ temp, umidade = info.values()
 if temp > 45:
     print("⚠️ ALERTA!!! Perigo calor extremo. 🥵")
 
-elif (temp * 3) >= umidade:
+elif temp != 0 and temp * 3 >= umidade:
     print("⚠️ ALERTA!!! Perigo de calor umido. 🥵")
 
-elif temp > 10 & temp < 30:
+elif temp > 10 and temp < 30:
     print("Normal. 🙂")
 
 elif temp >= 0 and temp <= 10:
