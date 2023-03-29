@@ -3,29 +3,46 @@
 Alarme de temperatura
 
 """
-__version__ = "0.0.2"
+__version__ = "0.0.3"
 
-import sys
+import logging
+
+log = logging.Logger("alert")
+
+# TODO: Mover para módulo de utilidades
+
+
+def is_completely_filled(dict_of_inputs):
+    """Returns a boolean teling if a dict is completely filled."""
+    info_size = len(info.values())
+    filled_size = len(
+        [value for value in info.values() if value is not None]
+    )
+
+    return info_size == filled_size
+
+
+def read_inputs_for_dict(dict_of_info):
+    """Reads information for a dict from user input."""
+    for key in dict_of_info.keys():
+        if dict_of_info[key] is not None:
+            continue
+        try:
+            dict_of_info[key] = float(input(f"Qual a {key} atual? ").strip())
+        except ValueError as e:
+            log.error("%s inválida, digite números", key.title())
+            break
+
+# Programa principal
+
 
 info = {
     "temperatura": None,
     "umidade": None,
 }
 
-# while True:
-#     # condicao de parada
-#     # o dicionario esta completamente preenchido
-#     info_size = len(info.values())
-#     filled_size = len([value for value in info.values() if value is not None])
-#     if info_size == filled_size:
-#         break
-
-for key in info.keys():
-    try:
-        info[key] = float(input(f"Qual a {key} atual? ").strip())
-    except ValueError as e:
-        print(f"Valor inválido, digite um número.\n(`{e}`)")
-        sys.exit(1)
+while not is_completely_filled(info):
+    read_inputs_for_dict(info)
 
 temp, umidade = info.values()
 
